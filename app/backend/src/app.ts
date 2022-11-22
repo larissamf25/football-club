@@ -1,4 +1,5 @@
 import * as express from 'express';
+import login from './database/constructor';
 
 class App {
   public app: express.Express;
@@ -10,6 +11,8 @@ class App {
 
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
+    console.log(login);
+    this.app.get('/login', (req, res) => res.json({ ok: true }));
   }
 
   private config():void {
