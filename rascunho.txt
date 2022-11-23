@@ -1,0 +1,128 @@
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('matches', {
+      id: {
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+      },
+      home_team: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      home_teams_goals: {
+        type: Sequelize.INTEGER,
+      },
+      away_team: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      away_team_goals: {
+        type: Sequelize.INTEGER,
+      },
+      in_progress: {
+        type: Sequelize.BOOLEAN,
+      },
+    });
+  },
+  down: async (queryInterface) => {
+    await queryInterface.dropTable('matches');
+  },
+};
+
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('teams', {
+      team_name: {
+        primaryKey: true,
+        type: Sequelize.STRING,
+      },
+    });
+  },
+  down: async (queryInterface) => {
+    await queryInterface.dropTable('teams');
+  },
+};
+
+import { DataTypes, Model } from 'sequelize';
+import db from '.';
+
+// import OtherModel from './OtherModel';
+
+class Matches extends Model {
+  declare id: number;
+  declare homeTeam: number;
+  declare homeTeamGoals: number;
+  declare awayTeam: number;
+  declare awayTeamGoals: number;
+  declare inProgress: boolean;
+}
+
+Matches.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  homeTeam: DataTypes.INTEGER,
+  homeTeamGoals: DataTypes.INTEGER,
+  awayTeam: DataTypes.INTEGER,
+  awayTeamGoals: DataTypes.INTEGER,
+  inProgress: DataTypes.BOOLEAN,
+}, {
+  underscored: true,
+  sequelize: db,
+  modelName: 'matches',
+  timestamps: false,
+});
+
+/**
+  * `Workaround` para aplicar as associations em TS:
+  * Associations 1:N devem ficar em uma das instâncias de modelo
+  * */
+
+// OtherModel.belongsTo(Example, { foreignKey: 'campoA', as: 'campoEstrangeiroA' });
+// OtherModel.belongsTo(Example, { foreignKey: 'campoB', as: 'campoEstrangeiroB' });
+
+// Example.hasMany(OtherModel, { foreignKey: 'campoC', as: 'campoEstrangeiroC' });
+// Example.hasMany(OtherModel, { foreignKey: 'campoD', as: 'campoEstrangeiroD' });
+
+export default Matches;
+
+import { DataTypes, Model } from 'sequelize';
+import db from '.';
+
+// import OtherModel from './OtherModel';
+
+class Teams extends Model {
+  declare teamName: string;
+}
+
+Teams.init({
+  teamName: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+  },
+}, {
+  underscored: true,
+  sequelize: db,
+  modelName: 'matches',
+  timestamps: false,
+});
+
+/**
+  * `Workaround` para aplicar as associations em TS:
+  * Associations 1:N devem ficar em uma das instâncias de modelo
+  * */
+
+// OtherModel.belongsTo(Example, { foreignKey: 'campoA', as: 'campoEstrangeiroA' });
+// OtherModel.belongsTo(Example, { foreignKey: 'campoB', as: 'campoEstrangeiroB' });
+
+// Example.hasMany(OtherModel, { foreignKey: 'campoC', as: 'campoEstrangeiroC' });
+// Example.hasMany(OtherModel, { foreignKey: 'campoD', as: 'campoEstrangeiroD' });
+
+export default Teams;
