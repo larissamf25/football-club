@@ -12,7 +12,11 @@ class Users extends Model {
 }
 
 Users.init({
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   username: DataTypes.STRING,
   role: DataTypes.STRING,
   email: DataTypes.STRING,
@@ -20,7 +24,7 @@ Users.init({
 }, {
   underscored: true,
   sequelize: db,
-  modelName: 'Users',
+  modelName: 'users',
   timestamps: false,
 });
 
