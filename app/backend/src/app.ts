@@ -1,18 +1,25 @@
 import * as express from 'express';
-import login from './database/constructor';
+import { Request, Response, NextFunction } from 'express';
+import UserController from './database/constructor/user.controller';
+import validateLogin, { validateToken } from './database/middlewares/validations';
 
 class App {
   public app: express.Express;
+  private userController: UserController;
 
   constructor() {
     this.app = express();
 
     this.config();
-
+    this.userController = new UserController();
     // Não remover essa rota
-    this.app.get('/', (req, res) => res.json({ ok: true }));
-    console.log(login);
-    this.app.post('/login', (req, res) => res.json({ ok: true }));
+    this.app.get('/', (_req, res) => res.json({ ok: true }));
+    // this.app.get('/login/validate', validateToken, userController.getRole);
+    this.app.post(
+      '/login',
+      (req: Request, res: Response, next: NextFunction) => validateLogin(req, res, next),
+      (req: Request, res: Response) => this.userController.login(req, res),
+    );
   }
 
   private config():void {
