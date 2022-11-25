@@ -68,7 +68,7 @@ describe('Verify login/validate route', () => {
       chaiHttpResponse = await chai.request(app).get('/login/validate').set('authorization', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJUZXN0ZSIsImlhdCI6MTY2OTIyNDgyOCwiZXhwIjoxNjY5ODI5NjI4fQ.cdxH1f-RRgYNomeH--e7tIpWr3CMVP7MEG0R3OA2eyw');
 
       expect(chaiHttpResponse.status).to.be.equals(404);
-      expect(chaiHttpResponse.body.role).to.be.equals('Email not found');
+      expect(chaiHttpResponse.body.message).to.be.equals('Email not found');
     });
   })
 });

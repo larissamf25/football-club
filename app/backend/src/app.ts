@@ -1,29 +1,25 @@
 import * as express from 'express';
-import { Request, Response, NextFunction } from 'express';
-import UserController from './database/controller/user.controller';
-import validateLogin, { validateToken } from './database/middlewares/validations';
+import LoginRoutes from './database/routes/LoginRoutes';
+import TeamRoutes from './database/routes/TeamRoutes';
 
 class App {
   public app: express.Express;
-  private userController: UserController;
+  private loginRoutes: LoginRoutes;
+  private teamRoutes: TeamRoutes;
 
   constructor() {
     this.app = express();
 
     this.config();
-    this.userController = new UserController();
+
+    this.loginRoutes = new LoginRoutes();
+    this.teamRoutes = new TeamRoutes();
+
     // Não remover essa rota
     this.app.get('/', (_req, res) => res.json({ ok: true }));
-    this.app.get(
-      '/login/validate',
-      (req: Request, res: Response, next: NextFunction) => validateToken(req, res, next),
-      (req: Request, res: Response) => this.userController.getRole(req, res),
-    );
-    this.app.post(
-      '/login',
-      (req: Request, res: Response, next: NextFunction) => validateLogin(req, res, next),
-      (req: Request, res: Response) => this.userController.login(req, res),
-    );
+
+    this.app.use('/login', this.loginRoutes.loginRouter);
+    this.app.use('/teams', this.teamRoutes.teamRouter);
   }
 
   private config():void {
