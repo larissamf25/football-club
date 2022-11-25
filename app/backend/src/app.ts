@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import UserController from './database/constructor/user.controller';
-import validateLogin, { validateToken } from './database/middlewares/validations';
+import validateLogin from './database/middlewares/validations';
 
 class App {
   public app: express.Express;
