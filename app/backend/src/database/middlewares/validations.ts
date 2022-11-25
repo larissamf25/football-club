@@ -11,7 +11,9 @@ type TypeRequest = {
 export const validateToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization;
 
-  if (!token) return res.status(401).json({ message: 'Token not found' });
+  if (!token) {
+    return res.status(401).json({ message: 'Token not found' });
+  }
 
   try {
     const data = jwt.verify(token, JWT_SECRET as string) as TypeRequest;
@@ -25,7 +27,9 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
 
 export default function validateLogin(req: Request, res: Response, next: NextFunction) {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'All fields must be filled' });
+  if (!email || !password) {
+    return res.status(400).json({ message: 'All fields must be filled' });
+  }
 
   const { error } = Joi.object({
     email: Joi.string().email()
@@ -36,7 +40,9 @@ export default function validateLogin(req: Request, res: Response, next: NextFun
       'string.min': 'Incorrect email or password',
     }),
   }).validate(req.body);
-  if (error) return res.status(401).json({ message: error.message });
+  if (error) {
+    return res.status(401).json({ message: error.message });
+  }
 
   return next();
 }

@@ -25,7 +25,7 @@ describe('Verify login route', () => {
         username: 'Teste',
         role: 'user',
         email: 'teste@user.com',
-        password: 'testando123'
+        password: '$2a$08$ywuLtsyUHtY7ixJZvHIp0.RopAzKAY13E.jyl3O.uX0wmrhtyw6Zm'
       } as UserModel);
   });
 
@@ -34,17 +34,23 @@ describe('Verify login route', () => {
   })
 
   it('should return 400 when missing email or passowrd', async () => {
-    chaiHttpResponse = await chai.request(app).post('/login').send({email: "teste@user.com"});
+    chaiHttpResponse = await chai.request(app).post('/login').send({ email: "teste@user.com" });
 
     expect(chaiHttpResponse.status).to.be.equals(400);
-    expect(chaiHttpResponse.body.message).to.be('All fields must be filled');
+    expect(chaiHttpResponse.body.message).to.be.equals('All fields must be filled');
   });
 
-  it('should return 401 when passing incorrects email or password', async () => {
-    chaiHttpResponse = await chai.request(app).post('/login').send({email: "teste@user.com", password: "123"});
+  it('should return 401 when passing incorrect email', async () => {
+    chaiHttpResponse = await chai.request(app).post('/login').send({email: "testeuser.com", password: "$2a$08$ywuLtsyUHtY7ixJZvHIp0.RopAzKAY13E.jyl3O.uX0wmrhtyw6Zm"});
 
     expect(chaiHttpResponse.status).to.be.equals(401);
-    expect(chaiHttpResponse.body.message).to.be('Incorrect email or password');
+    expect(chaiHttpResponse.body.message).to.be.equals('Incorrect email or password');
+  });
+  it('should return 401 when passing incorrect password', async () => {
+    chaiHttpResponse = await chai.request(app).post('/login').send({email: "teste@user.com", password: "password123"});
+
+    expect(chaiHttpResponse.status).to.be.equals(401);
+    expect(chaiHttpResponse.body.message).to.be.equals('Incorrect email or password');
   });
   it('should return the token', async () => {
     chaiHttpResponse = await chai.request(app).post('/login').send({email: "teste@user.com", password: "testando123"});

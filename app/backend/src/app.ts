@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response, NextFunction } from 'express';
-import UserController from './database/constructor/user.controller';
-import validateLogin from './database/middlewares/validations';
+import UserController from './database/controller/user.controller';
+import validateLogin, { validateToken } from './database/middlewares/validations';
 
 class App {
   public app: express.Express;
@@ -14,7 +14,11 @@ class App {
     this.userController = new UserController();
     // Não remover essa rota
     this.app.get('/', (_req, res) => res.json({ ok: true }));
-    // this.app.get('/login/validate', validateToken, userController.getRole);
+    this.app.get(
+      '/login/validate',
+      (req: Request, res: Response, next: NextFunction) => validateToken(req, res, next),
+      (req: Request, res: Response) => this.userController.getRole(req, res),
+    );
     this.app.post(
       '/login',
       (req: Request, res: Response, next: NextFunction) => validateLogin(req, res, next),
