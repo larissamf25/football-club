@@ -2,12 +2,14 @@ import * as express from 'express';
 import LoginRoutes from './database/routes/LoginRoutes';
 import TeamRoutes from './database/routes/TeamRoutes';
 import MatchRoutes from './database/routes/MatchRoutes';
+import LeaderBoardRoutes from './database/routes/LeaderBoardRoutes';
 
 class App {
   public app: express.Express;
   private loginRoutes: LoginRoutes;
   private teamRoutes: TeamRoutes;
   private matchRoutes: MatchRoutes;
+  private leaderBoardRoutes: LeaderBoardRoutes;
 
   constructor() {
     this.app = express();
@@ -17,6 +19,7 @@ class App {
     this.loginRoutes = new LoginRoutes();
     this.teamRoutes = new TeamRoutes();
     this.matchRoutes = new MatchRoutes();
+    this.leaderBoardRoutes = new LeaderBoardRoutes();
 
     // Não remover essa rota
     this.app.get('/', (_req, res) => res.json({ ok: true }));
@@ -24,6 +27,7 @@ class App {
     this.app.use('/login', this.loginRoutes.loginRouter);
     this.app.use('/teams', this.teamRoutes.teamRouter);
     this.app.use('/matches', this.matchRoutes.matchRouter);
+    this.app.use('/leaderboard', this.leaderBoardRoutes.leaderBoardRouter);
   }
 
   private config():void {

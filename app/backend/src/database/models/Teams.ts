@@ -15,6 +15,7 @@ Teams.init({
   teamName: {
     type: DataTypes.STRING,
     primaryKey: true,
+    field: 'team_name',
   },
 }, {
   underscored: true,
