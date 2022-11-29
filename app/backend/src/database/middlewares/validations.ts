@@ -19,7 +19,7 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
     const data = jwt.verify(token, JWT_SECRET as string) as TypeRequest;
     req.body.email = data.email;
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid token' });
+    return res.status(401).json({ message: 'Token must be a valid token' });
   }
 
   next();

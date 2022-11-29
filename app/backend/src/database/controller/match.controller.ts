@@ -5,15 +5,19 @@ import UserService from '../services/user.service';
 class MatchController {
   constructor(private matchService = new MatchService(), private userService = new UserService()) {}
 
+  public getMatchesInProgress = async () => {
+    const matches = await this.matchService.getMatches();
+    return matches.filter((match) => match.inProgress === false);
+  };
+
   public getMatches = async (req: Request, res: Response) => {
     const matches = await this.matchService.getMatches();
     const { inProgress } = req.query;
     if (inProgress === 'true') {
       return res.status(200).json(matches.filter((match) => match.inProgress === true));
     }
-    if (inProgress === 'false') {
-      return res.status(200).json(matches.filter((match) => match.inProgress === false));
-    }
+    if (inProgress === 'false') return res.status(200).json(this.getMatchesInProgress());
+
     return res.status(200).json(matches);
   };
 
@@ -28,8 +32,8 @@ class MatchController {
         .json({ message: 'It is not possible to create a match with two equal teams' });
     }
 
-    if (await this.matchService.getById(Number(homeTeam))
-    || await this.matchService.getById(Number(awayTeam))) {
+    if (!await this.matchService.getById(Number(homeTeam))
+    || !await this.matchService.getById(Number(awayTeam))) {
       return res.status(404).json({ message: 'There is no team with such id!' });
     }
 

@@ -1,4 +1,5 @@
 import MatchModel from '../models/Matches';
+import TeamModel from '../models/Teams';
 
 interface IMatch {
   id?: number,
@@ -14,7 +15,10 @@ class MatchService {
 
   async getMatches() {
     console.log(this.role);
-    const matches = await MatchModel.findAll();
+    const matches = await MatchModel.findAll({ include: [
+      { model: TeamModel, as: 'teamHome', attributes: ['teamName'] },
+      { model: TeamModel, as: 'teamAway', attributes: ['teamName'] },
+    ] });
     return matches;
   }
 
