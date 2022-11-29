@@ -7,17 +7,19 @@ class MatchController {
 
   public getMatchesInProgress = async () => {
     const matches = await this.matchService.getMatches();
+    return matches.filter((match) => match.inProgress === true);
+  };
+
+  public getMatchesNotInProgress = async () => {
+    const matches = await this.matchService.getMatches();
     return matches.filter((match) => match.inProgress === false);
   };
 
   public getMatches = async (req: Request, res: Response) => {
-    const matches = await this.matchService.getMatches();
     const { inProgress } = req.query;
-    if (inProgress === 'true') {
-      return res.status(200).json(matches.filter((match) => match.inProgress === true));
-    }
-    if (inProgress === 'false') return res.status(200).json(this.getMatchesInProgress());
-
+    if (inProgress === 'true') return res.status(200).json(await this.getMatchesInProgress());
+    if (inProgress === 'false') return res.status(200).json(await this.getMatchesNotInProgress());
+    const matches = await this.matchService.getMatches();
     return res.status(200).json(matches);
   };
 
