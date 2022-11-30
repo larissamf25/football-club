@@ -12,6 +12,10 @@ export default class LeaderBoardRoutes {
     this.leaderBoardController = new LeaderBoardController();
 
     this.leaderBoardRouter.get(
+      '/',
+      (req: Request, res: Response) => this.leaderBoardController.getLeaderBoardSorted(req, res),
+    );
+    this.leaderBoardRouter.get(
       '/home',
       (req: Request, res: Response) => this.leaderBoardController.getHome(req, res),
     );
