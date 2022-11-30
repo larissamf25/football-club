@@ -19,8 +19,14 @@ interface ITeams {
 interface IMatch {
   homeTeam: number,
   homeTeamGoals: number,
-  awayTeam?: number,
+  awayTeam: number,
   awayTeamGoals: number,
+  teamHome?: {
+    teamName: string,
+  },
+  teamAway?: {
+    teamName: string,
+  }
 }
 
 class LeaderBoardController {
@@ -41,36 +47,71 @@ class LeaderBoardController {
     goalsOwn: 0,
   });
 
-  public updateTable = (team: ITeams, currentTG: number, opponentTG: number) => {
-    const currentTeam = team;
-    currentTeam.totalGames += 1;
-    currentTeam.goalsFavor += currentTG;
-    currentTeam.goalsOwn += opponentTG;
-    if (currentTG > opponentTG) {
-      currentTeam.totalPoints += 3;
-      currentTeam.totalVictories += 1;
-    } else if (opponentTG > currentTG) {
-      currentTeam.totalLosses += 1;
-    } else {
-      currentTeam.totalPoints += 1;
-      currentTeam.totalDraws += 1;
-    }
-    return currentTeam;
+  /* public createTable = async (teamType: string) => {
+    const matches = await this.matchController.getMatchesInProgress();
+    const teams = await this.teamService.getTeams();
+    const result:ITeams[] = [];
+    teams.forEach((team) => {
+      if (teamType === 'home' && matches.some((match) => match.homeTeam === team.id)) {
+        result.push(this.newTeam(team.teamName));
+      } else if (teamType === 'away' && matches.some((match) => match.awayTeam === team.id)) {
+        console.log('oi');
+        result.push(this.newTeam(team.teamName));
+      }
+    });
+    return { result, matches };
+  }; */
+
+  public winner = (winner:ITeams, winnerGoals: number, loser:ITeams, loserGoals: number) => {
+    const newWinner = winner;
+    newWinner.totalPoints += 3;
+    newWinner.totalGames += 1;
+    newWinner.totalVictories += 1;
+    newWinner.goalsFavor += winnerGoals;
+    newWinner.goalsOwn += loserGoals;
+    const newLoser = loser;
+    newLoser.totalGames += 1;
+    newLoser.totalLosses += 1;
+    newLoser.goalsFavor += loserGoals;
+    newLoser.goalsOwn += winnerGoals;
+    return [newWinner, newLoser];
   };
 
-  public verifyTeam = async (
-    result: ITeams[],
-    { homeTeam, homeTeamGoals, awayTeamGoals }: IMatch,
-  ) => {
-    const current = await this.teamService.getById(homeTeam);
-    if (!current) return null;
-    let currentIndex = result.findIndex((team: ITeams) => team.name === current.teamName);
-    if (currentIndex === -1) {
-      result.push(this.newTeam(current.teamName));
-      currentIndex = result.length - 1;
-    }
-    const team = this.updateTable(result[currentIndex], homeTeamGoals, awayTeamGoals);
-    return { team, currentIndex };
+  public tie = (winner:ITeams, winnerGoals: number, loser:ITeams, loserGoals: number) => {
+    const firstTeam = winner;
+    firstTeam.totalPoints += 1;
+    firstTeam.totalGames += 1;
+    firstTeam.totalDraws += 1;
+    firstTeam.goalsFavor += winnerGoals;
+    firstTeam.goalsOwn += loserGoals;
+    const secondTeam = loser;
+    secondTeam.totalPoints += 1;
+    secondTeam.totalGames += 1;
+    secondTeam.totalDraws += 1;
+    secondTeam.goalsFavor += winnerGoals;
+    secondTeam.goalsOwn += loserGoals;
+    return [firstTeam, secondTeam];
+  };
+
+  public populateTable = (result:ITeams[], matches:IMatch[]) => {
+    const tList:ITeams[] = result;
+    matches.forEach(({ homeTeamGoals, awayTeamGoals, teamHome, teamAway }) => {
+      if (!teamHome || !teamAway) return null;
+      const { teamName: homeTeam } = teamHome;
+      const { teamName: awayTeam } = teamAway;
+      const homeIdx = tList.findIndex((team) => team.name === homeTeam);
+      const awayIdx = tList.findIndex((team) => team.name === awayTeam);
+      let home:ITeams;
+      let away:ITeams;
+      if (homeTeamGoals > awayTeamGoals) {
+        [home, away] = this.winner(tList[homeIdx], homeTeamGoals, tList[awayIdx], awayTeamGoals);
+      } else if (awayTeamGoals > homeTeamGoals) {
+        [away, home] = this.winner(tList[awayIdx], awayTeamGoals, tList[homeIdx], homeTeamGoals);
+      } else [away, home] = this.tie(tList[homeIdx], homeTeamGoals, tList[awayIdx], awayTeamGoals);
+      tList[homeIdx] = home;
+      tList[awayIdx] = away;
+    });
+    return tList;
   };
 
   public getEfficiency = (result: ITeams[]) => {
@@ -84,43 +125,30 @@ class LeaderBoardController {
 
   public getHome = async (_req: Request, res: Response) => {
     const matches = await this.matchController.getMatchesInProgress();
-    // const homeMatches = matches.map((match) => match.homeTeam);
+    const teams = await this.teamService.getTeams();
     const result:ITeams[] = [];
-    matches.forEach(async ({ homeTeam, homeTeamGoals, awayTeamGoals }) => {
-      const current = await this.teamService.getById(homeTeam);
-      if (!current) return null;
-      let currentIndex = result.findIndex((team: ITeams) => team.name === current.teamName);
-      if (currentIndex === -1) {
-        result.push(this.newTeam(current.teamName));
-        currentIndex = result.length - 1;
+    teams.forEach((team) => {
+      if (matches.some((match) => match.homeTeam === team.id)) {
+        result.push(this.newTeam(team.teamName));
       }
-      const team = this.updateTable(result[currentIndex], homeTeamGoals, awayTeamGoals);
-      result[currentIndex] = team;
-      /* if (homeMatches.includes(awayTeam)) {
-        const newOpponent = await this
-          .verifyTeam(result, { awayTeam, awayTeamGoals, homeTeam, homeTeamGoals });
-        if (newOpponent) result[newOpponent.currentIndex] = newOpponent.team;
-      } */
     });
-    const newResult = this.getEfficiency(result);
-    return res.status(200).json(newResult);
+    const teamsList = this.populateTable(result, matches);
+    if (!teamsList) return res.status(404).json({ message: 'Erro' });
+    return res.status(200).json(this.getEfficiency(teamsList));
   };
 
   public getAway = async (_req: Request, res: Response) => {
     const matches = await this.matchController.getMatchesInProgress();
-    const awayMatches = matches.map((match) => match.awayTeam);
+    const teams = await this.teamService.getTeams();
     const result:ITeams[] = [];
-    matches.forEach(async ({ homeTeam, homeTeamGoals, awayTeam, awayTeamGoals }) => {
-      const newCurrent = await this.verifyTeam(result, { homeTeam, homeTeamGoals, awayTeamGoals });
-      if (newCurrent) result[newCurrent.currentIndex] = newCurrent.team;
-      if (awayMatches.includes(awayTeam)) {
-        const newOpponent = await this
-          .verifyTeam(result, { awayTeam, awayTeamGoals, homeTeam, homeTeamGoals });
-        if (newOpponent) result[newOpponent.currentIndex] = newOpponent.team;
+    teams.forEach((team) => {
+      if (matches.some((match) => match.awayTeam === team.id)) {
+        result.push(this.newTeam(team.teamName));
       }
     });
-    const newResult = this.getEfficiency(result);
-    return res.status(200).json(newResult);
+    const teamsList = this.populateTable(result, matches);
+    if (!teamsList) return res.status(404).json({ message: 'Erro' });
+    return res.status(200).json(this.getEfficiency(teamsList));
   };
 }
 

@@ -8,12 +8,19 @@ interface IMatch {
   awayTeam: number,
   homeTeamGoals: number,
   awayTeamGoals: number,
+  teamHome?: {
+    teamName: string,
+  },
+  teamAway?: {
+    teamName: string,
+  }
+
 }
 
 class MatchService {
   private role = '';
 
-  async getMatches() {
+  async getMatches():Promise<IMatch[]> {
     console.log(this.role);
     const matches = await MatchModel.findAll({ include: [
       { model: TeamModel, as: 'teamHome', attributes: ['teamName'] },
