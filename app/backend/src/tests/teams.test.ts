@@ -14,17 +14,16 @@ const { app } = new App();
 
 const { expect } = chai;
 
-describe('integration tests for /teams/:id route', () => {
-  /* describe('all teams', () => {
+describe('Verify teams route', () => {
+  describe('all teams', () => {
     let chaiHttpResponse: Response;
     const teamMock =
-      {
+      [{
         "id": 1,
         "teamName": "Avaí/Kindermann"
-      };
-
+      }];
     beforeEach(async () => {
-      sinon.stub(TeamModel, 'findAll').resolves([teamMock] as TeamModel);
+      sinon.stub(TeamModel, 'findAll').resolves(teamMock as TeamModel[]);
     });
 
     afterEach(()=>{
@@ -35,9 +34,9 @@ describe('integration tests for /teams/:id route', () => {
       chaiHttpResponse = await chai.request(app).get('/teams');
 
       expect(chaiHttpResponse.status).to.be.equals(200);
-      expect(chaiHttpResponse.body).to.be.equals([teamMock]);
+      expect(chaiHttpResponse.body).to.be.deep.equal(teamMock);
     });
-  }) */
+  })
   describe('team by id', () => {
     let chaiHttpResponse: Response;
     const teamMock =

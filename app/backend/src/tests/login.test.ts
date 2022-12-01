@@ -17,7 +17,7 @@ const { expect } = chai;
 describe('Verify login route', () => {
   let chaiHttpResponse: Response;
 
-  before(async () => {
+  beforeEach(async () => {
     sinon
       .stub(UserModel, "findOne")
       .resolves({
@@ -29,7 +29,7 @@ describe('Verify login route', () => {
       } as UserModel);
   });
 
-  after(()=>{
+  afterEach(()=>{
     (UserModel.findOne as sinon.SinonStub).restore();
   })
 

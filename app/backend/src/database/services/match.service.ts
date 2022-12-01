@@ -1,21 +1,6 @@
+import IMatch from '../interfaces';
 import MatchModel from '../models/Matches';
 import TeamModel from '../models/Teams';
-
-interface IMatch {
-  id?: number,
-  inProgress?: boolean,
-  homeTeam: number,
-  awayTeam: number,
-  homeTeamGoals: number,
-  awayTeamGoals: number,
-  teamHome?: {
-    teamName: string,
-  },
-  teamAway?: {
-    teamName: string,
-  }
-
-}
 
 class MatchService {
   private role = '';

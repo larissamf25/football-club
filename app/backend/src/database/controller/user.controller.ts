@@ -25,7 +25,6 @@ class UserController {
     if (!user) {
       return res.status(404).json({ message: 'Email not found' });
     }
-
     return res.status(200).json({ role: user.role });
   };
 }
