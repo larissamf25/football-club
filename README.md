@@ -29,4 +29,4 @@
   All files in the src folder were developed by me and my collegues. The other ones were created by Trybe.
 
 ## How to run the project: 👀
-  Git clone the repository, enter the folder, wun npm install and it's ready to navigate!! Enjoy the project 💚
+  Git clone the repository, enter the folder, run npm install and it's ready to navigate!! Enjoy the project 💚
