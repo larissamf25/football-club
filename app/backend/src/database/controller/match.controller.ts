@@ -3,7 +3,10 @@ import MatchService from '../services/match.service';
 import UserService from '../services/user.service';
 
 class MatchController {
-  constructor(private matchService = new MatchService(), private userService = new UserService()) {}
+  constructor(
+    private matchService = new MatchService(),
+    private userService = new UserService(),
+  ) {}
 
   public getMatchesInProgress = async () => {
     const matches = await this.matchService.getMatches();

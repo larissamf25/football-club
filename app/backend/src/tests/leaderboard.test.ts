@@ -7,8 +7,7 @@ import App from '../app';
 import MatchModel from '../database/models/Matches';
 import TeamModel from '../database/models/Teams';
 import { Response } from 'superagent';
-import { leaderBoardHomeMock, leaderBoardMock, matchesMock, teamsMock } from './mocks';
-import IMatch from '../database/interfaces';
+import { leaderBoardAwayMock, leaderBoardHomeMock, leaderBoardMock, matchesMock, teamsMock } from './mocks';
 
 chai.use(chaiHttp);
 
@@ -48,6 +47,23 @@ describe('Verify learderboard route', () => {
 
     expect(chaiHttpResponse.status).to.be.equals(200);
     expect(chaiHttpResponse.body).to.be.deep.equal(leaderBoardHomeMock);
+
+    (TeamModel.findAll as sinon.SinonStub).restore();
+    (MatchModel.findAll as sinon.SinonStub).restore();
+  });
+
+  it('get leader board complete by away', async () => {
+    sinon
+      .stub(TeamModel, "findAll")
+      .resolves(teamsMock as TeamModel[]);
+    sinon
+    .stub(MatchModel, "findAll")
+    .resolves(matchesMock as any);
+
+    chaiHttpResponse = await chai.request(app).get('/leaderboard/away');
+
+    expect(chaiHttpResponse.status).to.be.equals(200);
+    expect(chaiHttpResponse.body).to.be.deep.equal(leaderBoardAwayMock);
 
     (TeamModel.findAll as sinon.SinonStub).restore();
     (MatchModel.findAll as sinon.SinonStub).restore();

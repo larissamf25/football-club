@@ -7,11 +7,11 @@ import App from '../app';
 import UserModel from '../database/models/Users';
 
 import { Response } from 'superagent';
+import { userMock } from './mocks';
 
 chai.use(chaiHttp);
 
 const { app } = new App();
-
 const { expect } = chai;
 
 describe('Verify login route', () => {
@@ -20,13 +20,7 @@ describe('Verify login route', () => {
   beforeEach(async () => {
     sinon
       .stub(UserModel, "findOne")
-      .resolves({
-        id: 3,
-        username: 'Teste',
-        role: 'user',
-        email: 'teste@user.com',
-        password: '$2a$08$ywuLtsyUHtY7ixJZvHIp0.RopAzKAY13E.jyl3O.uX0wmrhtyw6Zm'
-      } as UserModel);
+      .resolves(userMock as UserModel);
   });
 
   afterEach(()=>{

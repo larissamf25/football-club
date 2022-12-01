@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import MatchController from '../controller/match.controller';
 import { validateToken } from '../middlewares/validations';
 
-export default class TeamRoutes {
+export default class MatchRoutes {
   public matchRouter: express.IRouter;
   private matchController: MatchController;
 

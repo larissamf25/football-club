@@ -7,6 +7,7 @@ import App from '../app';
 import TeamModel from '../database/models/Teams';
 
 import { Response } from 'superagent';
+import { teamsMock } from './mocks';
 
 chai.use(chaiHttp);
 
@@ -15,49 +16,22 @@ const { app } = new App();
 const { expect } = chai;
 
 describe('Verify teams route', () => {
-  describe('all teams', () => {
     let chaiHttpResponse: Response;
-    const teamMock =
-      [{
-        "id": 1,
-        "teamName": "Avaí/Kindermann"
-      }];
-    beforeEach(async () => {
-      sinon.stub(TeamModel, 'findAll').resolves(teamMock as TeamModel[]);
-    });
-
-    afterEach(()=>{
-      (TeamModel.findAll as sinon.SinonStub).restore();
-    })
-
     it('should return all teams', async () => {
+      sinon.stub(TeamModel, 'findAll').resolves(teamsMock as TeamModel[]);
       chaiHttpResponse = await chai.request(app).get('/teams');
 
       expect(chaiHttpResponse.status).to.be.equals(200);
-      expect(chaiHttpResponse.body).to.be.deep.equal(teamMock);
+      expect(chaiHttpResponse.body).to.be.deep.equal(teamsMock);
+      (TeamModel.findAll as sinon.SinonStub).restore();
     });
-  })
-  describe('team by id', () => {
-    let chaiHttpResponse: Response;
-    const teamMock =
-      {
-        "id": 1,
-        "teamName": "Avaí/Kindermann"
-      };
-
-    beforeEach(async () => {
-      sinon.stub(TeamModel, 'findOne').resolves(teamMock as TeamModel);
-    });
-
-    afterEach(()=>{
-      (TeamModel.findOne as sinon.SinonStub).restore();
-    })
-
     it('should return a team by id', async () => {
+      sinon.stub(TeamModel, 'findOne').resolves(teamsMock[0] as TeamModel);
       chaiHttpResponse = await chai.request(app).get('/teams/1');
 
       expect(chaiHttpResponse.status).to.be.equals(200);
-      expect(chaiHttpResponse.body).to.be.deep.equal(teamMock);
+      expect(chaiHttpResponse.body).to.be.deep.equal(teamsMock[0]);
+
+      (TeamModel.findOne as sinon.SinonStub).restore();
     });
-  })
 });
